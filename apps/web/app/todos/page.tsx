@@ -1,5 +1,6 @@
 "use client";
-import { trpc } from "../../trpc/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { todosApi, Todo } from "../../api/client";
 import { CreateTodo } from "./create-todo";
 
 const priorityConfig = {
@@ -24,18 +25,28 @@ const priorityConfig = {
 };
 
 export default function TodosPage() {
-  const { data: todos, isLoading } = trpc.todo.getAllTodos.useQuery();
+  const queryClient = useQueryClient();
 
-  const utils = trpc.useUtils();
+  // GET /todos - получить все todos
+  const { data: todos, isLoading } = useQuery<Todo[]>({
+    queryKey: ["todos"],
+    queryFn: todosApi.getAll,
+  });
 
-  const updateTodo = trpc.todo.updateTodo.useMutation({
+  // PUT /todos/:id - обновить todo
+  const updateTodo = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { completed: boolean } }) =>
+      todosApi.update(id, data),
     onSuccess: () => {
-      utils.todo.getAllTodos.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
-  const deleteTodo = trpc.todo.deleteTodo.useMutation({
+
+  // DELETE /todos/:id - удалить todo
+  const deleteTodo = useMutation({
+    mutationFn: (id: string) => todosApi.delete(id),
     onSuccess: () => {
-      utils.todo.getAllTodos.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 
@@ -45,7 +56,7 @@ export default function TodosPage() {
 
   const handleDeleteTodo = (id: string) => {
     if (!confirm("Are you sure you want to delete this todo?")) return;
-    deleteTodo.mutate({ id });
+    deleteTodo.mutate(id);
   };
 
   const formatDate = (dateString: string) => {

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import { TodoRouter } from './todo.router';
+import { TodosController } from './todos.controller';
 
 @Module({
-  providers: [TodosService, TodoRouter],
+  controllers: [TodosController], // Контроллер вместо Router
+  providers: [TodosService],
 })
 export class TodosModule {}

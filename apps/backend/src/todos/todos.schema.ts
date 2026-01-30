@@ -1,20 +1,27 @@
-import { z } from 'zod';
+// Простые TypeScript интерфейсы вместо Zod схем
 
-export const todosSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  completed: z.boolean(),
-  createdAt: z.string(),
-  dueDate: z.string().optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional(),
-});
+export interface Todo {
+  id: string;
+  name: string;
+  description: string;
+  completed: boolean;
+  createdAt: string;
+  dueDate?: string;
+  priority?: 'low' | 'medium' | 'high';
+}
 
-export const createTodoSchema = todosSchema.omit({
-  id: true,
-  createdAt: true,
-});
+export interface CreateTodoDto {
+  name: string;
+  description: string;
+  completed: boolean;
+  dueDate?: string;
+  priority?: 'low' | 'medium' | 'high';
+}
 
-export type CreateTodoInput = z.infer<typeof createTodoSchema>;
-
-export type Todo = z.infer<typeof todosSchema>;
+export interface UpdateTodoDto {
+  name?: string;
+  description?: string;
+  completed?: boolean;
+  dueDate?: string;
+  priority?: 'low' | 'medium' | 'high';
+}

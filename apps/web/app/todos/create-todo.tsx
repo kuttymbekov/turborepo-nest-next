@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "../../trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { todosApi } from "../../api/client";
 
 export function CreateTodo() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -10,16 +11,18 @@ export function CreateTodo() {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
 
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
 
-  const { mutate: createTodo, isPending } = trpc.todo.createTodo.useMutation({
+  // POST /todos - создать todo
+  const { mutate: createTodo, isPending } = useMutation({
+    mutationFn: todosApi.create,
     onSuccess: () => {
       setName("");
       setDescription("");
       setDueDate("");
       setPriority("medium");
       setIsExpanded(false);
-      utils.todo.getAllTodos.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 
