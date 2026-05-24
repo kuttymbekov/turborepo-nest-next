@@ -1,10 +1,5 @@
-'use client';
-import { trpc } from "../trpc/client";
+import { redirect } from 'next/navigation';
 
-export default () =>{
-
-  const { data } = trpc.todo.getAllTodos.useQuery();
-  console.log(data);
-
-  return <div>asd</div>
+export default function Home() {
+  redirect('/journal');
 }

@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
-import {TRPCModule} from "nestjs-trpc";
-import { TodosModule } from './todos/todos.module';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { WorkTypesModule } from './work-types/work-types.module';
+import { WorkEntriesModule } from './work-entries/work-entries.module';
 
 @Module({
-  imports: [TRPCModule.forRoot({
-    autoSchemaFile: '../../packages/trpc/src/server'
-  }), TodosModule],
-  controllers: [],
-  providers: [],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    WorkTypesModule,
+    WorkEntriesModule,
+  ],
 })
 export class AppModule {}
